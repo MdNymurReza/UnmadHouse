@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -o /dev/null -w \"health: %{http_code}\\\\n\" http://localhost:4000/api/health)",
+      "Bash(curl -s -X POST http://localhost:4000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"admin@unmadhouse.local\",\"password\":\"password123\"}')",
+      "Bash(curl -s -o /dev/null -w \"health: %{http_code}\\\\n\" --max-time 5 http://localhost:4000/api/health)",
+      "Bash(node src/index.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" --max-time 5 http://localhost:4000/api/health)"
+    ]
+  }
+}

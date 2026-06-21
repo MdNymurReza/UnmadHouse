@@ -1,0 +1,18 @@
+# Render Blueprint — deploys the Express backend.
+# In the Render dashboard you'll set the secret env vars (DATABASE_URL, JWT_SECRET, CLIENT_ORIGIN).
+services:
+  - type: web
+    name: unmadhouse-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node src/index.js
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: PORT
+        value: 4000
+      # Set these as secrets in the Render dashboard:
+      # DATABASE_URL  -> your Supabase Session-pooler string
+      # JWT_SECRET    -> a long random string
+      # CLIENT_ORIGIN -> your deployed frontend URL (e.g. https://unmadhouse.vercel.app)
