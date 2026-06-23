@@ -36,3 +36,20 @@ INSERT INTO payments (user_id, month_year, amount, method, tx_id, status, approv
   (4, '2026-06', 4000, 'Cash', NULL,    'Unpaid', NULL,  NULL),
   (5, '2026-06', 4500, 'MFS',  'NG456', 'Paid',   NOW(), 1),
   (6, '2026-06', 4700, 'Cash', NULL,    'Unpaid', NULL,  NULL);
+
+-- Sample inventory items.
+INSERT INTO inventory (name, quantity, status, category, updated_by) VALUES
+  ('Rice',      '12 kg',    'in-stock', 'Grains',   1),
+  ('Cooking Oil','2.5 L',   'in-stock', 'Pantry',   1),
+  ('Spices',    'Mixed box','low',      'Pantry',   2),
+  ('Potatoes',  '5 kg',     'in-stock', 'Vegetables', 1);
+
+-- Sample notices.
+INSERT INTO notices (author_id, title, body, pinned) VALUES
+  (1, 'Kitchen closed Sunday', 'The kitchen will be deep-cleaned on Sunday morning. Please clear your fridge shelf by Saturday night.', TRUE),
+  (2, 'New member onboarding', 'Welcome to Tania who joined Room B2 today! Please log your bazaar entries and mark your meals.', FALSE);
+
+-- Sample meal plan: member 3 is out for dinner on June 3 and 4.
+INSERT INTO meal_plan (user_id, date, lunch, dinner, note) VALUES
+  (3, '2026-06-03', TRUE,  FALSE, 'Dinner with family'),
+  (3, '2026-06-04', TRUE,  FALSE, 'Late meeting');

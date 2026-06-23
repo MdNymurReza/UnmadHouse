@@ -100,3 +100,45 @@ CREATE INDEX idx_bazaar_buyer    ON bazaar (buyer_id);
 CREATE INDEX idx_bazaar_status   ON bazaar (status);
 CREATE INDEX idx_requests_status ON requests (status);
 CREATE INDEX idx_payments_status ON payments (status);
+
+-- Common supplies / inventory tracking.
+CREATE TABLE inventory (
+    id         SERIAL PRIMARY KEY,
+    name       TEXT NOT NULL,
+    quantity   TEXT,                    -- "5 kg", "2 bottles", "low"
+    status     TEXT NOT NULL DEFAULT 'in-stock'
+                 CHECK (status IN ('in-stock', 'low', 'out')),
+    category   TEXT DEFAULT 'General',
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_by INTEGER REFERENCES users(id)
+);
+
+-- Notice board / announcements.
+CREATE TABLE notices (
+    id         SERIAL PRIMARY KEY,
+    author_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    title      TEXT NOT NULL,
+    body       TEXT,
+    pinned     BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Meal planning: members mark themselves "in" or "out" for lunch/dinner ahead of time.
+CREATE TABLE meal_plan (
+    id      SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    date    DATE NOT NULL,
+    lunch   BOOLEAN NOT NULL DEFAULT TRUE,   -- TRUE = eating, FALSE = skipping
+    dinner  BOOLEAN NOT NULL DEFAULT TRUE,
+    note    TEXT,
+    UNIQUE (user_id, date)
+);
+
+-- PWA push subscription tokens for mobile notifications.
+CREATE TABLE push_subscriptions (
+    id           SERIAL PRIMARY KEY,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    subscription JSONB NOT NULL,
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (user_id, subscription)
+);

@@ -63,4 +63,29 @@ router.put('/', requireStaff, async (req, res) => {
   res.json(rows[0]);
 });
 
+// PUT /api/meals/bulk — staff sets meals for multiple members on one date.
+router.put('/bulk', requireStaff, async (req, res) => {
+  const { date, members } = req.body || {};
+  if (!date || !Array.isArray(members) || members.length === 0) {
+    return res.status(400).json({ error: 'date and members array are required' });
+  }
+  const results = [];
+  for (const m of members) {
+    if (m.user_id == null || m.lunch == null || m.dinner == null) continue;
+    const meal_count = deriveCount(m.lunch, m.dinner);
+    const { rows } = await pool.query(
+      `INSERT INTO meals (user_id, date, lunch, dinner, meal_count)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (user_id, date)
+       DO UPDATE SET lunch = EXCLUDED.lunch,
+                     dinner = EXCLUDED.dinner,
+                     meal_count = EXCLUDED.meal_count
+       RETURNING id, user_id, date, lunch, dinner, meal_count`,
+      [m.user_id, date, !!m.lunch, !!m.dinner, meal_count]
+    );
+    results.push(rows[0]);
+  }
+  res.json(results);
+});
+
 export default router;

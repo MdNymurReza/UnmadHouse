@@ -430,6 +430,16 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .cal-dot.lunch { background: var(--amber-600); }
 .cal-dot.dinner { background: var(--accent); }
 
+/* Month selector in topbar */
+.mo-arrow {
+  background: none; border: none; color: inherit; cursor: pointer;
+  padding: 2px 4px; font-size: .7rem; border-radius: 4px;
+}
+.mo-arrow:hover { background: var(--border); }
+.mo-rollover {
+  margin-left: 6px; font-size: .7rem; padding: 2px 8px;
+}
+
 /* ===========================================================================
    Marketing / Landing site (.mkt) — SaaS product look
    =========================================================================== */

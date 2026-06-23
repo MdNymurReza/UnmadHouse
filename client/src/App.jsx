@@ -4,6 +4,9 @@ import Layout from './components/Layout.jsx';
 
 import Landing from './pages/Landing.jsx';
 import Login from './pages/Login.jsx';
+import Inventory from './pages/Inventory.jsx';
+import Notices from './pages/Notices.jsx';
+import MealPlan from './pages/MealPlan.jsx';
 import Dashboard from './pages/member/Dashboard.jsx';
 import Onboarding from './pages/member/Onboarding.jsx';
 import FixedBills from './pages/member/FixedBills.jsx';
@@ -49,6 +52,9 @@ export default function App() {
         <Route path="corrections" element={<Corrections />} />
         <Route path="payments" element={<PaymentHistory />} />
         <Route path="reports" element={<Reports />} />
+        <Route path="inventory" element={<Inventory />} />
+        <Route path="notices" element={<Notices />} />
+        <Route path="meal-plan" element={<MealPlan />} />
 
         {/* Owner panel (ADMIN + MANAGER) */}
         <Route path="admin" element={<ProtectedRoute roles={STAFF}><AdminHome /></ProtectedRoute>} />

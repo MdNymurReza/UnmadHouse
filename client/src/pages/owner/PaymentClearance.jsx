@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client.js';
 import { useToast } from '../../context/ToastContext.jsx';
-import { DEFAULT_MONTH, money } from '../../lib/month.js';
+import { useMonth } from '../../context/MonthContext.jsx';
+import { money } from '../../lib/month.js';
 import Badge from '../../components/Badge.jsx';
 import { PageHeader, TableWrap, Loading, EmptyState } from '../../components/ui.jsx';
 
 // Admin-only: review submitted payments and flip Unpaid -> Paid.
 export default function PaymentClearance() {
   const toast = useToast();
+  const { month } = useMonth();
   const [payments, setPayments] = useState(null);
   const [error, setError] = useState(null);
 
   async function load() {
-    try { setPayments(await api.get(`/payments?monthYear=${DEFAULT_MONTH}`)); }
+    try { setPayments(await api.get(`/payments?monthYear=${month}`)); }
     catch (e) { setError(e.message); }
   }
   useEffect(() => { load(); }, []);
@@ -26,7 +28,7 @@ export default function PaymentClearance() {
 
   return (
     <div>
-      <PageHeader title="Payment Clearance" subtitle={`Submitted payments for ${DEFAULT_MONTH}`} />
+      <PageHeader title="Payment Clearance" subtitle={`Submitted payments for ${month}`} />
       {error && <p className="error-text">{error}</p>}
       {payments === null && <Loading />}
 

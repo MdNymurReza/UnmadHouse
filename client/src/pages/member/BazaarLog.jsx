@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client.js';
 import { useToast } from '../../context/ToastContext.jsx';
-import { DEFAULT_MONTH, money } from '../../lib/month.js';
+import { useMonth } from '../../context/MonthContext.jsx';
+import { money } from '../../lib/month.js';
 import Badge from '../../components/Badge.jsx';
 import { PageHeader, Card, TableWrap, Loading, EmptyState } from '../../components/ui.jsx';
 
 export default function BazaarLog() {
   const toast = useToast();
+  const { month } = useMonth();
   const [entries, setEntries] = useState(null);
   const [amount, setAmount] = useState('');
-  const [date, setDate] = useState(`${DEFAULT_MONTH}-01`);
+  const [date, setDate] = useState(`${month}-01`);
   const [details, setDetails] = useState('');
 
   async function load() {
-    try { setEntries(await api.get(`/bazaar?monthYear=${DEFAULT_MONTH}`)); }
+    try { setEntries(await api.get(`/bazaar?monthYear=${month}`)); }
     catch (e) { toast.error(e.message); }
   }
   useEffect(() => { load(); }, []);

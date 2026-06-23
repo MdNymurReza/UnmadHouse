@@ -5,7 +5,8 @@ import {
 } from 'recharts';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { DEFAULT_MONTH, money } from '../../lib/month.js';
+import { useMonth } from '../../context/MonthContext.jsx';
+import { money } from '../../lib/month.js';
 import { PageHeader, Card, Loading } from '../../components/ui.jsx';
 
 const COLORS = ['#4f46e5', '#059669', '#d97706', '#dc2626', '#0ea5e9'];
@@ -13,13 +14,14 @@ const COLORS = ['#4f46e5', '#059669', '#d97706', '#dc2626', '#0ea5e9'];
 // Personal analytics — scoped to the logged-in member's own data only.
 export default function Reports() {
   const { user } = useAuth();
+  const { month } = useMonth();
   const [breakdown, setBreakdown] = useState(null);
   const [trends, setTrends] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     Promise.all([
-      api.get(`/reports/breakdown/${DEFAULT_MONTH}?userId=${user.id}`),
+      api.get(`/reports/breakdown/${month}?userId=${user.id}`),
       api.get(`/reports/trends?months=6&userId=${user.id}`),
     ])
       .then(([b, t]) => { setBreakdown(b.filter((x) => x.value > 0)); setTrends(t); })
@@ -35,7 +37,7 @@ export default function Reports() {
       {breakdown && (
         <>
           <div className="grid grid-2" style={{ marginBottom: 18 }}>
-            <Card title={`My Cost Split (${DEFAULT_MONTH})`}>
+            <Card title={`My Cost Split (${month})`}>
               <ResponsiveContainer width="100%" height={280}>
                 <PieChart>
                   <Pie data={breakdown} dataKey="value" nameKey="name" outerRadius={100} label>

@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client.js';
-import { DEFAULT_MONTH, money } from '../../lib/month.js';
+import { useMonth } from '../../context/MonthContext.jsx';
+import { money } from '../../lib/month.js';
 import { PageHeader, Card, Loading } from '../../components/ui.jsx';
 
 const OCCUPANTS = 6;
 
 export default function FixedBills() {
+  const { month } = useMonth();
   const [bill, setBill] = useState(null);
   const [me, setMe] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    Promise.all([api.get(`/bills/${DEFAULT_MONTH}`), api.get('/auth/me')])
+    Promise.all([api.get(`/bills/${month}`), api.get('/auth/me')])
       .then(([b, m]) => { setBill(b); setMe(m); })
       .catch((e) => setError(e.message));
   }, []);
@@ -24,7 +26,7 @@ export default function FixedBills() {
 
   return (
     <div>
-      <PageHeader title="Monthly Fixed Bills" subtitle={`Your split for ${DEFAULT_MONTH} — utilities divided equally by ${OCCUPANTS}.`} />
+      <PageHeader title="Monthly Fixed Bills" subtitle={`Your split for ${month} — utilities divided equally by ${OCCUPANTS}.`} />
 
       <Card title="Fixed Cost Sheet">
         <table>

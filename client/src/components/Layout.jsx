@@ -1,6 +1,8 @@
 import { NavLink, Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { DEFAULT_MONTH } from '../lib/month.js';
+import { useMonth } from '../context/MonthContext.jsx';
+import { api } from '../api/client.js';
+import { useToast } from '../context/ToastContext.jsx';
 
 // Paths are relative to the /app parent route (see App.jsx).
 const MEMBER_LINKS = [
@@ -8,11 +10,14 @@ const MEMBER_LINKS = [
   { to: '/app/onboarding', label: 'Onboarding', ico: '◔' },
   { to: '/app/bills', label: 'Fixed Bills', ico: '▤' },
   { to: '/app/meals', label: 'Meal Calendar', ico: '◷' },
+  { to: '/app/meal-plan', label: 'Meal Planning', ico: '◑' },
   { to: '/app/bazaar', label: 'Bazaar Log', ico: '▣' },
   { to: '/app/invoice', label: 'My Invoice', ico: '₹' },
   { to: '/app/payments', label: 'Payment History', ico: '⊞' },
   { to: '/app/corrections', label: 'Corrections', ico: '✎' },
   { to: '/app/reports', label: 'Reports', ico: '◫' },
+  { to: '/app/inventory', label: 'Inventory', ico: '▥' },
+  { to: '/app/notices', label: 'Notice Board', ico: '📋' },
 ];
 
 // `admin` marks links only the ADMIN role should see; MANAGER sees the rest.
@@ -34,8 +39,20 @@ function activeLabel(pathname) {
 
 export default function Layout() {
   const { user, logout, isStaff } = useAuth();
+  const { month, goPrev, goNext, setMonth } = useMonth();
+  const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+
+  async function rollover() {
+    const [y, m] = month.split('-').map(Number);
+    const next = m === 12 ? `${y + 1}-01` : `${y}-${String(m + 1).padStart(2, '0')}`;
+    try {
+      await api.post('/rollover/rollover', { fromMonth: month, toMonth: next });
+      toast.success(`Rolled over to ${next}`);
+      setMonth(next);
+    } catch (e) { toast.error(e.message); }
+  }
 
   function handleLogout() {
     logout();
@@ -85,7 +102,14 @@ export default function Layout() {
       <div className="content">
         <header className="topbar">
           <div className="crumb">UnmadHouse <span style={{ margin: '0 6px' }}>/</span> <b>{activeLabel(location.pathname)}</b></div>
-          <div className="month-pill">📅 Billing month: {DEFAULT_MONTH}</div>
+          <div className="month-pill">
+            <button className="mo-arrow" onClick={goPrev} title="Previous month">◀</button>
+            <span>{month}</span>
+            <button className="mo-arrow" onClick={goNext} title="Next month">▶</button>
+            {user?.role === 'ADMIN' && (
+              <button className="small mo-rollover" onClick={rollover} title="Copy bills to next month">→</button>
+            )}
+          </div>
         </header>
         <div className="page">
           <Outlet />

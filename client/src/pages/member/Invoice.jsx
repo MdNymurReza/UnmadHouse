@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useToast } from '../../context/ToastContext.jsx';
-import { DEFAULT_MONTH, money } from '../../lib/month.js';
+import { useMonth } from '../../context/MonthContext.jsx';
+import { money } from '../../lib/month.js';
 import Badge from '../../components/Badge.jsx';
 import { PageHeader, Card, Loading } from '../../components/ui.jsx';
 
 export default function Invoice() {
   const { user } = useAuth();
+  const { month } = useMonth();
   const toast = useToast();
   const [inv, setInv] = useState(null);
   const [method, setMethod] = useState('Cash');
@@ -17,7 +19,7 @@ export default function Invoice() {
 
   async function load() {
     try {
-      const data = await api.get(`/invoices/${user.id}/${DEFAULT_MONTH}`);
+      const data = await api.get(`/invoices/${user.id}/${month}`);
       setInv(data);
       if (!amount) setAmount(String(data.invoiceTotal));
     } catch (e) { toast.error(e.message); }
@@ -28,7 +30,7 @@ export default function Invoice() {
     e.preventDefault();
     try {
       await api.post('/payments', {
-        month_year: DEFAULT_MONTH, amount: Number(amount), method,
+        month_year: month, amount: Number(amount), method,
         tx_id: method === 'MFS' ? txId : null,
         sender_no: method === 'MFS' ? senderNo : null,
       });
@@ -42,7 +44,7 @@ export default function Invoice() {
   return (
     <div>
       <PageHeader
-        title={`Monthly Invoice — ${DEFAULT_MONTH}`}
+        title={`Monthly Invoice — ${month}`}
         subtitle="Your detailed cost breakdown and payment options"
         actions={<Badge status={inv.payment.status} />}
       />

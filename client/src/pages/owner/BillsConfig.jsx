@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../api/client.js';
 import { useToast } from '../../context/ToastContext.jsx';
-import { DEFAULT_MONTH, money } from '../../lib/month.js';
+import { useMonth } from '../../context/MonthContext.jsx';
+import { money } from '../../lib/month.js';
 import { PageHeader, Card } from '../../components/ui.jsx';
 
 // Admin-only: set the shared monthly utilities (split equally by 6).
 export default function BillsConfig() {
   const toast = useToast();
-  const [monthYear, setMonthYear] = useState(DEFAULT_MONTH);
+  const { month: billingMonth } = useMonth();
+  const [monthYear, setMonthYear] = useState(billingMonth);
   const [bua, setBua] = useState('');
   const [gas, setGas] = useState('');
   const [current, setCurrent] = useState('');

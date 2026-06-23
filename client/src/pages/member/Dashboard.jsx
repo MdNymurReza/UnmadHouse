@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { DEFAULT_MONTH, money, fmtDate } from '../../lib/month.js';
+import { useMonth } from '../../context/MonthContext.jsx';
+import { money, fmtDate } from '../../lib/month.js';
 import Badge from '../../components/Badge.jsx';
 import { PageHeader, Stat, Card, Loading } from '../../components/ui.jsx';
 
@@ -11,18 +12,21 @@ const COLORS = ['#4f46e5', '#059669', '#d97706', '#dc2626', '#0ea5e9'];
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { month } = useMonth();
   const [invoice, setInvoice] = useState(null);
   const [breakdown, setBreakdown] = useState(null);
+  const [activity, setActivity] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     Promise.all([
-      api.get(`/invoices/${user.id}/${DEFAULT_MONTH}`),
-      api.get(`/reports/breakdown/${DEFAULT_MONTH}`), // member → auto-scoped to self
+      api.get(`/invoices/${user.id}/${month}`),
+      api.get(`/reports/breakdown/${month}`), // member → auto-scoped to self
+      api.get('/activity?limit=4'),
     ])
-      .then(([inv, bd]) => { setInvoice(inv); setBreakdown(bd.filter((x) => x.value > 0)); })
+      .then(([inv, bd, act]) => { setInvoice(inv); setBreakdown(bd.filter((x) => x.value > 0)); setActivity(act); })
       .catch((e) => setError(e.message));
-  }, [user.id]);
+  }, [user.id, month]);
 
   const isPaid = invoice?.payment?.status === 'Paid';
 
@@ -30,7 +34,7 @@ export default function Dashboard() {
     <div>
       <PageHeader
         title={`Welcome back, ${user.name.split(' ')[0]}`}
-        subtitle={`Your mess summary for ${DEFAULT_MONTH}`}
+        subtitle={`Your mess summary for ${month}`}
         actions={<Link to="/app/invoice"><button>View invoice</button></Link>}
       />
 
@@ -101,6 +105,24 @@ export default function Dashboard() {
               <p style={{ marginTop: 14 }}><Link to="/app/reports">See full analytics →</Link></p>
             </Card>
           </div>
+
+          {/* Mini meal bar + recent activity */}
+          {activity.length > 0 && (
+            <Card title="Recent Activity" style={{ marginTop: 18 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {activity.map((a, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '.88rem' }}>
+                    <span>
+                      <strong>{a.who}</strong>
+                      <span className="muted"> {a.kind === 'bazaar' ? 'logged bazaar' : a.kind === 'payment' ? 'paid invoice' : 'updated'}</span>
+                      {' · ৳'}{a.detail}
+                    </span>
+                    <span className="muted" style={{ fontSize: '.78rem' }}>{fmtDate(a.when)}</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
         </>
       )}
     </div>
