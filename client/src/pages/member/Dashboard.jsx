@@ -31,7 +31,7 @@ export default function Dashboard() {
       <PageHeader
         title={`Welcome back, ${user.name.split(' ')[0]}`}
         subtitle={`Your mess summary for ${DEFAULT_MONTH}`}
-        actions={<Link to="/invoice"><button>View invoice</button></Link>}
+        actions={<Link to="/app/invoice"><button>View invoice</button></Link>}
       />
 
       {error && <p className="error-text">{error}</p>}
@@ -98,7 +98,7 @@ export default function Dashboard() {
                   <tr><td><strong>Total Due</strong></td><td className="num"><strong>{money(invoice.invoiceTotal)}</strong></td></tr>
                 </tbody>
               </table>
-              <p style={{ marginTop: 14 }}><Link to="/reports">See full analytics →</Link></p>
+              <p style={{ marginTop: 14 }}><Link to="/app/reports">See full analytics →</Link></p>
             </Card>
           </div>
         </>

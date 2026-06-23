@@ -2,7 +2,7 @@
   "name": "UnmadHouse — Mess Management",
   "short_name": "UnmadHouse",
   "description": "Automated mess management: meals, bazaar, bills, and invoices.",
-  "start_url": "/",
+  "start_url": "/app",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",

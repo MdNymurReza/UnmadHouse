@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Layout from './components/Layout.jsx';
 
+import Landing from './pages/Landing.jsx';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/member/Dashboard.jsx';
 import Onboarding from './pages/member/Onboarding.jsx';
@@ -25,9 +26,13 @@ const STAFF = ['ADMIN', 'MANAGER'];
 export default function App() {
   return (
     <Routes>
+      {/* Public marketing site */}
+      <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
 
+      {/* Authenticated application, nested under /app */}
       <Route
+        path="/app"
         element={
           <ProtectedRoute>
             <Layout />

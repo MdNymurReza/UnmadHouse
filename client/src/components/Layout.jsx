@@ -1,33 +1,34 @@
-import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { DEFAULT_MONTH } from '../lib/month.js';
 
+// Paths are relative to the /app parent route (see App.jsx).
 const MEMBER_LINKS = [
-  { to: '/', label: 'Dashboard', ico: '▦', end: true },
-  { to: '/onboarding', label: 'Onboarding', ico: '◔' },
-  { to: '/bills', label: 'Fixed Bills', ico: '▤' },
-  { to: '/meals', label: 'Meal Calendar', ico: '◷' },
-  { to: '/bazaar', label: 'Bazaar Log', ico: '▣' },
-  { to: '/invoice', label: 'My Invoice', ico: '₹' },
-  { to: '/payments', label: 'Payment History', ico: '⊞' },
-  { to: '/corrections', label: 'Corrections', ico: '✎' },
-  { to: '/reports', label: 'Reports', ico: '◫' },
+  { to: '/app', label: 'Dashboard', ico: '▦', end: true },
+  { to: '/app/onboarding', label: 'Onboarding', ico: '◔' },
+  { to: '/app/bills', label: 'Fixed Bills', ico: '▤' },
+  { to: '/app/meals', label: 'Meal Calendar', ico: '◷' },
+  { to: '/app/bazaar', label: 'Bazaar Log', ico: '▣' },
+  { to: '/app/invoice', label: 'My Invoice', ico: '₹' },
+  { to: '/app/payments', label: 'Payment History', ico: '⊞' },
+  { to: '/app/corrections', label: 'Corrections', ico: '✎' },
+  { to: '/app/reports', label: 'Reports', ico: '◫' },
 ];
 
 // `admin` marks links only the ADMIN role should see; MANAGER sees the rest.
 const STAFF_LINKS = [
-  { to: '/admin', label: 'Owner Home', ico: '◆' },
-  { to: '/admin/meals', label: 'Daily Meal Sheet', ico: '☑' },
-  { to: '/admin/queue', label: 'Approval Queue', ico: '⧉' },
-  { to: '/admin/members', label: 'Member Management', ico: '⚇', admin: true },
-  { to: '/admin/payments', label: 'Payments', ico: '◉', admin: true },
-  { to: '/admin/bills', label: 'Configure Bills', ico: '⚙', admin: true },
+  { to: '/app/admin', label: 'Owner Home', ico: '◆' },
+  { to: '/app/admin/meals', label: 'Daily Meal Sheet', ico: '☑' },
+  { to: '/app/admin/queue', label: 'Approval Queue', ico: '⧉' },
+  { to: '/app/admin/members', label: 'Member Management', ico: '⚇', admin: true },
+  { to: '/app/admin/payments', label: 'Payments', ico: '◉', admin: true },
+  { to: '/app/admin/bills', label: 'Configure Bills', ico: '⚙', admin: true },
 ];
 
 // Human label for the active route (topbar breadcrumb).
 function activeLabel(pathname) {
   const all = [...MEMBER_LINKS, ...STAFF_LINKS];
-  const match = all.find((l) => (l.end ? pathname === l.to : pathname === l.to));
+  const match = all.find((l) => pathname === l.to);
   return match?.label || 'Dashboard';
 }
 
@@ -46,9 +47,9 @@ export default function Layout() {
   return (
     <div className="layout">
       <aside className="sidebar">
-        <div className="brand">
+        <Link to="/" className="brand" style={{ textDecoration: 'none' }}>
           <span className="logo">U</span> UnmadHouse
-        </div>
+        </Link>
         <nav className="side-nav">
           <div className="nav-group-label">Member</div>
           {MEMBER_LINKS.map((l) => (

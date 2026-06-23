@@ -12,7 +12,7 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  if (user) navigate('/', { replace: true });
+  if (user) navigate('/app', { replace: true });
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -21,7 +21,7 @@ export default function Login() {
     try {
       const u = await login(email, password);
       toast.success(`Welcome back, ${u.name.split(' ')[0]}`);
-      navigate('/', { replace: true });
+      navigate('/app', { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
