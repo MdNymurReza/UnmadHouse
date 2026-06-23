@@ -2,9 +2,39 @@ import { Router } from 'express';
 import { pool } from '../db/pool.js';
 import { verifyJWT } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/rbac.js';
+import bcrypt from 'bcryptjs';
 
 const router = Router();
 router.use(verifyJWT);
+
+// POST /api/users — admin creates a new member account with hashed password.
+router.post('/', requireAdmin, async (req, res) => {
+  const { name, email, password, room_no, joining_date, room_rent,
+          advance_paid, fridge_fund, service_charge, role } = req.body || {};
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: 'name, email, and password are required' });
+  }
+  const existing = await pool.query(`SELECT id FROM users WHERE email = $1`, [email]);
+  if (existing.rows.length > 0) {
+    return res.status(409).json({ error: 'A member with that email already exists' });
+  }
+  const allowedRole = role === 'MANAGER' ? 'MANAGER' : 'MEMBER';
+  const hash = await bcrypt.hash(password, 10);
+  const { rows } = await pool.query(
+    `INSERT INTO users (name, email, password_hash, role, room_no, joining_date,
+                        room_rent, advance_paid, fridge_fund, service_charge)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+     RETURNING id, name, email, role, room_no, joining_date,
+               room_rent, advance_paid, fridge_fund, service_charge`,
+    [
+      name, email, hash, allowedRole,
+      room_no || null,
+      joining_date || new Date().toISOString().slice(0, 10),
+      room_rent ?? 0, advance_paid ?? 0, fridge_fund ?? 0, service_charge ?? 0,
+    ]
+  );
+  res.status(201).json(rows[0]);
+});
 
 // GET /api/users — roster (staff sees it for the role matrix / approvals).
 router.get('/', async (_req, res) => {
